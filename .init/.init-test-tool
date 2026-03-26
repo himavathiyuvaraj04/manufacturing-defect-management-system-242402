@@ -1,0 +1,4 @@
+{
+    "command": "pytest",
+    "working_directory": "/home/kavia/workspace/code-generation/manufacturing-defect-management-system-242402/defect_management_backend"
+}
