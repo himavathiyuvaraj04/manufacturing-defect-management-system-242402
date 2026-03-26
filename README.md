@@ -1,1 +1,3 @@
-# manufacturing-defect-management-system-242402
+# Project Repository
+
+This is the initial README file for the project.
