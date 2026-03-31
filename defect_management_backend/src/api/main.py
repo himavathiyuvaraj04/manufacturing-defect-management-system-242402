@@ -78,13 +78,30 @@ app = FastAPI(
 # --------------------------------------------------------------------------------------
 # CORS
 # --------------------------------------------------------------------------------------
+#
+# NOTE:
+# - When allow_credentials=True, Starlette/FastAPI cannot use allow_origins=["*"].
+#   Browsers will reject such responses and credentialed requests will fail.
+# - In preview environments, the frontend often runs on a dynamic origin; support
+#   explicit origins via env and (optionally) regex patterns.
 
-cors_allow_origins = os.getenv("CORS_ALLOW_ORIGINS", "*")
-allow_origins = ["*"] if cors_allow_origins.strip() == "*" else [o.strip() for o in cors_allow_origins.split(",") if o.strip()]
+cors_allow_origins = os.getenv("CORS_ALLOW_ORIGINS", "")
+cors_allow_origin_regex = os.getenv("CORS_ALLOW_ORIGIN_REGEX", "")
+
+allow_origins = [o.strip() for o in cors_allow_origins.split(",") if o.strip()]
+
+# Reasonable defaults for local dev/preview if nothing is configured.
+# IMPORTANT: In real deployments, prefer setting CORS_ALLOW_ORIGINS explicitly.
+if not allow_origins and not cors_allow_origin_regex:
+    allow_origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
+    allow_origin_regex=cors_allow_origin_regex or None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
